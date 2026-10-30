@@ -1,6 +1,7 @@
 using KickZone.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace KickZone.Controllers
 {
@@ -15,6 +16,10 @@ namespace KickZone.Controllers
 
         public IActionResult Index()
         {
+            
+
+            List<ShoesModel> Shoes = new List<ShoesModel>();
+
             ShoesModel shoe1 = new ShoesModel
             {
                 Id = 1,
@@ -29,7 +34,26 @@ namespace KickZone.Controllers
                 CategoryId = 1
 
             };
-            return View(shoe1);
+
+            ShoesModel shoe2 = new ShoesModel
+            {
+                Id = 2,
+                Name = "Nike Shox",
+                Size = 42,
+                Price = 140.00m,
+
+                Description = "????? ?? ??????",
+                ImageUrl = "Images/11111.jpg",
+                Color = "Black and Purple",
+                Brand = "Nike",
+                CategoryId = 2
+
+            };
+
+
+            Shoes.Add(shoe1);
+
+            return View(Shoes);
         }
 
         public IActionResult Privacy()
