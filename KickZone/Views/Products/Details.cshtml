@@ -1,0 +1,65 @@
+@model ShoesModel
+@{
+    ViewData["Title"] = Model.Name;
+    bool inStock = Model.Stock > 0;
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Начало</a></li>
+        <li class="breadcrumb-item active">@Model.Name</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="product-image-wrapper bg-light rounded p-3 text-center">
+            <img src="@Model.DisplayImageUrl" class="img-fluid rounded" alt="@Model.Name" style="max-height: 450px;" />
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <span class="badge bg-dark fs-6 mb-2">@Model.Brand</span>
+        <h2>@Model.Name</h2>
+
+        <h3 class="text-primary mb-3">@Model.Price.ToString("F2") €</h3>
+
+        @if (inStock)
+        {
+            <p class="text-success fw-bold">В наличност (@Model.Stock бр.)</p>
+        }
+        else
+        {
+            <p class="text-danger fw-bold">Продуктът не е наличен</p>
+        }
+
+        <form asp-controller="Cart" asp-action="Add" method="post" class="d-flex gap-2 align-items-center my-3">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <label for="quantity" class="form-label mb-0">Количество:</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" max="@(inStock ? Model.Stock : 1)" class="form-control" style="width: 90px;" />
+            <button type="submit" class="btn btn-primary btn-lg" disabled="@(!inStock)">
+                @(inStock ? "Добави в количката" : "Изчерпан")
+            </button>
+        </form>
+
+        <h5 class="mt-4">Описание</h5>
+        <p>@(Model.Description ?? "Няма описание.")</p>
+
+        <h5 class="mt-4">Характеристики</h5>
+        <table class="table table-sm table-bordered" style="max-width: 400px;">
+            <tbody>
+                <tr><th style="width: 40%;">Категория</th><td>@Model.CategoryName</td></tr>
+                <tr><th>Марка</th><td>@Model.Brand</td></tr>
+                <tr><th>Цвят</th><td>@Model.Color</td></tr>
+                <tr><th>Размер (EU)</th><td>@Model.Size</td></tr>
+                <tr><th>Наличност</th><td>@(inStock ? $"{Model.Stock} бр." : "Изчерпан")</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>

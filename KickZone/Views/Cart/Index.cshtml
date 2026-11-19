@@ -1,0 +1,64 @@
+@model KickZone.Models.ViewModels.CartViewModel
+@{
+    ViewData["Title"] = "Количка";
+}
+
+<h2>Количка</h2>
+
+@if (!string.IsNullOrEmpty(Model.Error))
+{
+    <div class="alert alert-danger">@Model.Error</div>
+}
+
+@if (Model.Items.Count == 0)
+{
+    <p>Количката е празна. <a asp-controller="Home" asp-action="Index">Към продуктите</a></p>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Продукт</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Общо</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="@item.DisplayImageUrl" alt="@item.ShoeName" style="width:60px;height:60px;object-fit:cover;" />
+                            <div>
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ShoeId">@item.ShoeName</a>
+                                <div class="text-muted small">@item.ShoeBrand · @item.ShoeColor · EU @item.ShoeSize</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>@item.ShoePrice.ToString("F2") €</td>
+                    <td>@item.Quantity</td>
+                    <td>@((item.ShoePrice * item.Quantity).ToString("F2")) €</td>
+                    <td>
+                        <form asp-action="Remove" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Премахни</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>Обща сума: @Model.Total.ToString("F2") €</h4>
+        <form asp-action="Checkout" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success btn-lg">Поръчай</button>
+        </form>
+    </div>
+}

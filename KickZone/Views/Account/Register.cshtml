@@ -1,0 +1,59 @@
+@model KickZone.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h3 class="text-center mb-4">Регистрация</h3>
+
+                @if (!string.IsNullOrEmpty(Model.Error))
+                {
+                    <div class="alert alert-danger">@Model.Error</div>
+                }
+
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" asp-for="FirstName">Име</label>
+                            <input asp-for="FirstName" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" asp-for="LastName">Фамилия</label>
+                            <input asp-for="LastName" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Username">Потребителско име *</label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Email">Имейл *</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="Password">Парола * (мин. 6 символа)</label>
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" asp-for="ConfirmPassword">Потвърди паролата *</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Регистрирай се</button>
+                </form>
+
+                <p class="text-center mt-3 mb-0">
+                    Имаш акаунт? <a asp-action="Login">Вход</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

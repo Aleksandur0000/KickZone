@@ -1,0 +1,116 @@
+@model KickZone.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Админ панел";
+}
+
+<h2>Админ панел</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="text-primary">@Model.UserCount</h3>
+                <p class="mb-0 text-muted">Потребители</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="text-primary">@Model.ShoeCount</h3>
+                <p class="mb-0 text-muted">Продукти</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h3 class="text-primary">@Model.OrderCount</h3>
+                <p class="mb-0 text-muted">Поръчки</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Оборот и поръчки по дни (последните 14 дни)</h5>
+        <canvas id="revenueChart" height="90"></canvas>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-4">
+    <a asp-action="Shoes" class="btn btn-primary">Управление на продукти</a>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Към сайта</a>
+</div>
+
+<h4>Последни поръчки</h4>
+@if (Model.RecentOrders.Count == 0)
+{
+    <p class="text-muted">Все още няма поръчки.</p>
+}
+else
+{
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr><th>ID</th><th>Потребител</th><th>Сума</th><th>Статус</th><th>Дата</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var o in Model.RecentOrders)
+            {
+                <tr>
+                    <td>@o.Id</td>
+                    <td>@o.Username</td>
+                    <td>@o.TotalPrice.ToString("F2") €</td>
+                    <td>@o.Status</td>
+                    <td>@o.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    var labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueByDay.Select(d => d.Day.ToString("dd.MM"))));
+    var revenue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueByDay.Select(d => d.Revenue)));
+    var orders = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RevenueByDay.Select(d => d.Orders)));
+
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Оборот (€)',
+                    data: revenue,
+                    backgroundColor: 'rgba(230, 57, 70, 0.7)',
+                    borderColor: '#e63946',
+                    borderWidth: 1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Поръчки',
+                    data: orders,
+                    type: 'line',
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: '€' } },
+                y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'поръчки' } }
+            }
+        }
+    });
+})();
+</script>
+}

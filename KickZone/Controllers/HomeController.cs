@@ -1,59 +1,44 @@
 using KickZone.Models;
+using KickZone.Models.ViewModels;
+using KickZone.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace KickZone.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly DatabaseService _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, DatabaseService db)
         {
             _logger = logger;
+            _db = db;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? categoryId, string? brand, string? search)
         {
-            
-
-            List<ShoesModel> Shoes = new List<ShoesModel>();
-
-            ShoesModel shoe1 = new ShoesModel
+            var vm = new CatalogViewModel
             {
-                Id = 1,
-                Name = "Nike Air Max",
-                Size = 42,
-                Price = 150.00m,
-
-                Description = "????? ?? ??????",
-                ImageUrl = "Images/11111.jpg",
-                Color = "Neon Green",
-                Brand = "Nike",
-                CategoryId = 1
-
+                CategoryId = categoryId,
+                Brand = brand,
+                Search = search
             };
 
-            ShoesModel shoe2 = new ShoesModel
+            try
             {
-                Id = 2,
-                Name = "Nike Shox",
-                Size = 42,
-                Price = 140.00m,
+                vm.Shoes = _db.GetShoes(categoryId, brand, search);
+                vm.Categories = _db.GetCategories();
+                vm.Brands = _db.GetBrands();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load shoes from database");
+                vm.Error = "Неуспешно зареждане на продуктите. Провери връзката с базата.";
+            }
 
-                Description = "????? ?? ??????",
-                ImageUrl = "Images/11111.jpg",
-                Color = "Black and Purple",
-                Brand = "Nike",
-                CategoryId = 2
-
-            };
-
-
-            Shoes.Add(shoe1);
-
-            return View(Shoes);
+            return View(vm);
         }
 
         public IActionResult Privacy()

@@ -1,0 +1,10 @@
+@{
+    ViewData["Title"] = "Поръчката е приета";
+}
+
+<div class="text-center py-5">
+    <h2 class="text-success">Благодарим за поръчката!</h2>
+    <p>Номер на поръчката: <strong>#@ViewBag.OrderId</strong></p>
+    <p>Ще получиш имейл с потвърждение.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-3">Към продуктите</a>
+</div>
